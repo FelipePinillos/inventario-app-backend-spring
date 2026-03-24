@@ -19,8 +19,8 @@ public class CompraController {
 
     @GetMapping
     public ResponseEntity<List<CompraDTO>> findAll(
-            @RequestParam(defaultValue = "false") boolean incluir_inactivos) {
-        return ResponseEntity.ok(compraService.findAll(incluir_inactivos));
+            @RequestParam(name = "incluir_inactivos", defaultValue = "false") boolean incluirInactivos) {
+        return ResponseEntity.ok(compraService.findAll(incluirInactivos));
     }
 
     @GetMapping("/{id}")

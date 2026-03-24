@@ -19,8 +19,8 @@ public class MarcaController {
 
     @GetMapping
     public ResponseEntity<List<MarcaDTO>> findAll(
-            @RequestParam(defaultValue = "false") boolean incluir_inactivos) {
-        return ResponseEntity.ok(marcaService.findAll(incluir_inactivos));
+            @RequestParam(name = "incluir_inactivos", defaultValue = "false") boolean incluirInactivos) {
+        return ResponseEntity.ok(marcaService.findAll(incluirInactivos));
     }
 
     @GetMapping("/{id}")

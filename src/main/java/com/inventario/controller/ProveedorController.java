@@ -19,8 +19,8 @@ public class ProveedorController {
 
     @GetMapping
     public ResponseEntity<List<ProveedorDTO>> findAll(
-            @RequestParam(defaultValue = "false") boolean incluir_inactivos) {
-        return ResponseEntity.ok(proveedorService.findAll(incluir_inactivos));
+            @RequestParam(name = "incluir_inactivos", defaultValue = "false") boolean incluirInactivos) {
+        return ResponseEntity.ok(proveedorService.findAll(incluirInactivos));
     }
 
     @GetMapping("/{id}")

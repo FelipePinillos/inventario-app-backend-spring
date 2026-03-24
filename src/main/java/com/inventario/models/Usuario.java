@@ -34,7 +34,7 @@ public class Usuario {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_usuario_id", nullable = false)
+    @JoinColumn(name = "tipo_usuario_id")
     private TipoUsuario tipoUsuario;
 
     @Column(nullable = false, length = 1)

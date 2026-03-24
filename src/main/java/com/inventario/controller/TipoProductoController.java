@@ -19,8 +19,8 @@ public class TipoProductoController {
 
     @GetMapping
     public ResponseEntity<List<TipoProductoDTO>> findAll(
-            @RequestParam(defaultValue = "false") boolean incluir_inactivos) {
-        return ResponseEntity.ok(tipoProductoService.findAll(incluir_inactivos));
+            @RequestParam(name = "incluir_inactivos", defaultValue = "false") boolean incluirInactivos) {
+        return ResponseEntity.ok(tipoProductoService.findAll(incluirInactivos));
     }
 
     @GetMapping("/{id}")

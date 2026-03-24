@@ -19,8 +19,8 @@ public class PresentacionController {
 
     @GetMapping
     public ResponseEntity<List<PresentacionDTO>> findAll(
-            @RequestParam(defaultValue = "false") boolean incluir_inactivos) {
-        return ResponseEntity.ok(presentacionService.findAll(incluir_inactivos));
+            @RequestParam(name = "incluir_inactivos", defaultValue = "false") boolean incluirInactivos) {
+        return ResponseEntity.ok(presentacionService.findAll(incluirInactivos));
     }
 
     @GetMapping("/{id}")
