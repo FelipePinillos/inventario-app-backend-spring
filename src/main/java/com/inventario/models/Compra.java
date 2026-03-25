@@ -2,16 +2,12 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "compra")
+@Table(name = "compras")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,38 +18,44 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proveedor_id", nullable = false)
-    private Proveedor proveedor;
+    @Column(name = "fecha_compra")
+    private LocalDateTime fechaCompra;
+
+    @Column(name = "fecha_entrega")
+    private LocalDateTime fechaEntrega;
+
+    @Column(name = "totalcondescuento", precision = 10, scale = 2)
+    private BigDecimal totalConDescuento;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal descuento;
+
+    @Column(name = "totalsindescuento", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalSinDescuento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_pago_id", nullable = false)
-    private EstadoPago estadoPago;
+    @JoinColumn(name = "id_proveedor")
+    private Proveedor proveedor;
 
-    @Column(nullable = false)
-    private LocalDate fecha;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal total;
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
 
-    @Column(length = 500)
-    private String observaciones;
-
-    @Column(nullable = false, length = 1)
+    @Column(length = 20)
     @Builder.Default
-    private String estado = "A";
+    private String estado = "CONFIRMADA";
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_by")
+    private Integer createdBy;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DetalleCompra> detalles;

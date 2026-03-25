@@ -34,7 +34,6 @@ public class MarcaService {
     public MarcaDTO create(MarcaDTO.Create dto) {
         Marca marca = Marca.builder()
                 .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
                 .estado("A")
                 .build();
         return toDTO(marcaRepository.save(marca));
@@ -46,7 +45,6 @@ public class MarcaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Marca", id));
 
         if (dto.getNombre() != null) marca.setNombre(dto.getNombre());
-        if (dto.getDescripcion() != null) marca.setDescripcion(dto.getDescripcion());
 
         return toDTO(marcaRepository.save(marca));
     }
@@ -63,10 +61,9 @@ public class MarcaService {
         return MarcaDTO.builder()
                 .id(marca.getId())
                 .nombre(marca.getNombre())
-                .descripcion(marca.getDescripcion())
                 .estado(marca.getEstado())
-                .createdAt(marca.getCreatedAt())
-                .updatedAt(marca.getUpdatedAt())
+                .fechaCreacion(marca.getFechaCreacion())
+                .fechaEdicion(marca.getFechaEdicion())
                 .build();
     }
 }

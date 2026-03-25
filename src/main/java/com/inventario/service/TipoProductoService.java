@@ -34,7 +34,6 @@ public class TipoProductoService {
     public TipoProductoDTO create(TipoProductoDTO.Create dto) {
         TipoProducto tipo = TipoProducto.builder()
                 .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
                 .estado("A")
                 .build();
         return toDTO(tipoProductoRepository.save(tipo));
@@ -46,7 +45,6 @@ public class TipoProductoService {
                 .orElseThrow(() -> new ResourceNotFoundException("TipoProducto", id));
 
         if (dto.getNombre() != null) tipo.setNombre(dto.getNombre());
-        if (dto.getDescripcion() != null) tipo.setDescripcion(dto.getDescripcion());
 
         return toDTO(tipoProductoRepository.save(tipo));
     }
@@ -63,10 +61,9 @@ public class TipoProductoService {
         return TipoProductoDTO.builder()
                 .id(tipo.getId())
                 .nombre(tipo.getNombre())
-                .descripcion(tipo.getDescripcion())
                 .estado(tipo.getEstado())
-                .createdAt(tipo.getCreatedAt())
-                .updatedAt(tipo.getUpdatedAt())
+                .fechaCreacion(tipo.getFechaCreacion())
+                .fechaEdicion(tipo.getFechaEdicion())
                 .build();
     }
 }

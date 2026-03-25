@@ -1,5 +1,6 @@
 package com.inventario.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,23 +11,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AuthResponseDTO {
-    private String token;
-    private String type;
-    private Long userId;
-    private String nombre;
-    private String apellido;
-    private String email;
-    private String tipoUsuario;
 
-    public static AuthResponseDTO of(String token, Long userId, String nombre, String apellido, String email, String tipoUsuario) {
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("token_type")
+    private String tokenType;
+
+    public static AuthResponseDTO of(String token) {
         return AuthResponseDTO.builder()
-                .token(token)
-                .type("Bearer")
-                .userId(userId)
-                .nombre(nombre)
-                .apellido(apellido)
-                .email(email)
-                .tipoUsuario(tipoUsuario)
+                .accessToken(token)
+                .tokenType("bearer")
                 .build();
     }
 }

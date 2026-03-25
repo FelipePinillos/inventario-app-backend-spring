@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,11 +15,14 @@ import java.time.LocalDateTime;
 @Builder
 public class ProductoDTO {
     private Long id;
+    private String codigo;
     private String nombre;
-    private String descripcion;
-    private BigDecimal precioCompra;
-    private BigDecimal precioVenta;
-    private Integer stock;
+    private String unidadBase;
+    private String adicional;
+    private Integer stockMinimo;
+    private Integer stockActual;
+    private Integer stockMaximo;
+    private String avatar;
     private Long categoriaId;
     private String categoriaNombre;
     private Long marcaId;
@@ -28,26 +30,25 @@ public class ProductoDTO {
     private Long tipoProductoId;
     private String tipoProductoNombre;
     private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class Create {
+        private String codigo;
+
         @NotBlank(message = "El nombre es requerido")
         private String nombre;
 
-        private String descripcion;
-
-        @NotNull(message = "El precio de compra es requerido")
-        private BigDecimal precioCompra;
-
-        @NotNull(message = "El precio de venta es requerido")
-        private BigDecimal precioVenta;
-
-        private Integer stock;
+        private String unidadBase;
+        private String adicional;
+        private Integer stockMinimo;
+        private Integer stockActual;
+        private Integer stockMaximo;
+        private String avatar;
 
         @NotNull(message = "La categoría es requerida")
         private Long categoriaId;
@@ -64,11 +65,14 @@ public class ProductoDTO {
     @AllArgsConstructor
     @Builder
     public static class Update {
+        private String codigo;
         private String nombre;
-        private String descripcion;
-        private BigDecimal precioCompra;
-        private BigDecimal precioVenta;
-        private Integer stock;
+        private String unidadBase;
+        private String adicional;
+        private Integer stockMinimo;
+        private Integer stockActual;
+        private Integer stockMaximo;
+        private String avatar;
         private Long categoriaId;
         private Long marcaId;
         private Long tipoProductoId;

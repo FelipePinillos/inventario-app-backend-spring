@@ -2,9 +2,6 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,30 +16,37 @@ public class Proveedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
-    private String nombre;
+    @Column(name = "razon_social", length = 100)
+    private String razonSocial;
 
-    @Column(length = 150)
-    private String contacto;
+    @Column(nullable = false)
+    private Long ruc;
 
-    @Column(length = 20)
-    private String telefono;
+    private Integer telefono;
 
-    @Column(length = 150)
-    private String email;
+    @Column(nullable = false, length = 45)
+    private String correo;
 
-    @Column(length = 255)
+    @Column(nullable = false, length = 45)
     private String direccion;
 
-    @Column(nullable = false, length = 1)
+    @Column(nullable = false, length = 255)
+    @Builder.Default
+    private String avatar = "proveedor.png";
+
+    @Column(nullable = false, length = 10)
     @Builder.Default
     private String estado = "A";
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
+
+    @Column(name = "created_by")
+    private Integer createdBy;
+
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 }

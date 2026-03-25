@@ -1,6 +1,5 @@
 package com.inventario.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +16,12 @@ public class UsuarioDTO {
     private Long id;
     private String nombre;
     private String apellido;
-    private String email;
+    private String dni;
     private Long tipoUsuarioId;
     private String tipoUsuarioNombre;
     private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
@@ -35,12 +34,11 @@ public class UsuarioDTO {
         @NotBlank(message = "El apellido es requerido")
         private String apellido;
 
-        @NotBlank(message = "El email es requerido")
-        @Email(message = "El email debe ser válido")
-        private String email;
+        @NotBlank(message = "El DNI es requerido")
+        private String dni;
 
         @NotBlank(message = "La contraseña es requerida")
-        private String password;
+        private String contrasena;
 
         private Long tipoUsuarioId;
     }
@@ -52,9 +50,8 @@ public class UsuarioDTO {
     public static class Update {
         private String nombre;
         private String apellido;
-        @Email(message = "El email debe ser válido")
-        private String email;
-        private String password;
+        private String dni;
+        private String contrasena;
         private Long tipoUsuarioId;
     }
 }

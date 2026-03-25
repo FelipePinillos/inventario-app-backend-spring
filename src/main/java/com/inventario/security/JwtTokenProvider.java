@@ -18,8 +18,8 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpirationMs;
+    @Value("${jwt.expiration-minutes}")
+    private long jwtExpirationMinutes;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -28,19 +28,20 @@ public class JwtTokenProvider {
 
     public String generateToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return generateTokenFromEmail(userDetails.getUsername());
+        return generateTokenFromDni(userDetails.getUsername());
     }
 
-    public String generateTokenFromEmail(String email) {
+    public String generateTokenFromDni(String dni) {
+        long expirationMs = jwtExpirationMinutes * 60 * 1000;
         return Jwts.builder()
-                .subject(email)
+                .subject(dni)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String getEmailFromToken(String token) {
+    public String getDniFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

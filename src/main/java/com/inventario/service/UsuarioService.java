@@ -38,8 +38,8 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioDTO create(UsuarioDTO.Create dto) {
-        if (usuarioRepository.existsByEmail(dto.getEmail())) {
-            throw new BadRequestException("Ya existe un usuario con el email: " + dto.getEmail());
+        if (usuarioRepository.existsByDni(dto.getDni())) {
+            throw new BadRequestException("Ya existe un usuario con el DNI: " + dto.getDni());
         }
 
         TipoUsuario tipoUsuario = null;
@@ -51,8 +51,8 @@ public class UsuarioService {
         Usuario usuario = Usuario.builder()
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .dni(dto.getDni())
+                .contrasena(passwordEncoder.encode(dto.getContrasena()))
                 .tipoUsuario(tipoUsuario)
                 .estado("A")
                 .build();
@@ -67,14 +67,14 @@ public class UsuarioService {
 
         if (dto.getNombre() != null) usuario.setNombre(dto.getNombre());
         if (dto.getApellido() != null) usuario.setApellido(dto.getApellido());
-        if (dto.getEmail() != null) {
-            if (!dto.getEmail().equals(usuario.getEmail()) && usuarioRepository.existsByEmail(dto.getEmail())) {
-                throw new BadRequestException("Ya existe un usuario con el email: " + dto.getEmail());
+        if (dto.getDni() != null) {
+            if (!dto.getDni().equals(usuario.getDni()) && usuarioRepository.existsByDni(dto.getDni())) {
+                throw new BadRequestException("Ya existe un usuario con el DNI: " + dto.getDni());
             }
-            usuario.setEmail(dto.getEmail());
+            usuario.setDni(dto.getDni());
         }
-        if (dto.getPassword() != null) {
-            usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (dto.getContrasena() != null) {
+            usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
         }
         if (dto.getTipoUsuarioId() != null) {
             TipoUsuario tipoUsuario = tipoUsuarioRepository.findById(dto.getTipoUsuarioId())
@@ -98,12 +98,12 @@ public class UsuarioService {
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())
                 .apellido(usuario.getApellido())
-                .email(usuario.getEmail())
+                .dni(usuario.getDni())
                 .tipoUsuarioId(usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().getId() : null)
                 .tipoUsuarioNombre(usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().getNombre() : null)
                 .estado(usuario.getEstado())
-                .createdAt(usuario.getCreatedAt())
-                .updatedAt(usuario.getUpdatedAt())
+                .fechaCreacion(usuario.getFechaCreacion())
+                .fechaEdicion(usuario.getFechaEdicion())
                 .build();
     }
 }

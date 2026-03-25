@@ -2,9 +2,6 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,31 +16,38 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 45)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 45)
     private String apellido;
 
-    @Column(nullable = false, unique = true, length = 150)
-    private String email;
+    @Column(length = 45)
+    private String dni;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(length = 255)
+    private String contrasena;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_usuario_id")
-    private TipoUsuario tipoUsuario;
+    @Column(length = 40)
+    private String correo;
 
-    @Column(nullable = false, length = 1)
+    @Column(length = 10)
     @Builder.Default
     private String estado = "A";
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_usuario", nullable = false)
+    private TipoUsuario tipoUsuario;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
+
+    @Column(name = "created_by")
+    private Integer createdBy;
+
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 }

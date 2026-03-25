@@ -1,6 +1,7 @@
 package com.inventario.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,27 +17,27 @@ public class ClienteDTO {
     private Long id;
     private String nombre;
     private String apellido;
-    private String email;
-    private String telefono;
-    private String direccion;
+    private String dni;
+    private Integer telefono;
+    private String correo;
     private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class Create {
-        @NotBlank(message = "El nombre es requerido")
         private String nombre;
-
-        @NotBlank(message = "El apellido es requerido")
         private String apellido;
+        private String dni;
 
-        private String email;
-        private String telefono;
-        private String direccion;
+        @NotNull(message = "El teléfono es requerido")
+        private Integer telefono;
+
+        @NotBlank(message = "El correo es requerido")
+        private String correo;
     }
 
     @Data
@@ -46,8 +47,8 @@ public class ClienteDTO {
     public static class Update {
         private String nombre;
         private String apellido;
-        private String email;
-        private String telefono;
-        private String direccion;
+        private String dni;
+        private Integer telefono;
+        private String correo;
     }
 }

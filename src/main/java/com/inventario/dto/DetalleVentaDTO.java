@@ -16,22 +16,21 @@ import java.time.LocalDateTime;
 public class DetalleVentaDTO {
     private Long id;
     private Long ventaId;
-    private Long productoId;
-    private String productoNombre;
+    private Long presentacionId;
+    private String presentacionNombre;
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;
-    private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class Create {
-        @NotNull(message = "El producto es requerido")
-        private Long productoId;
+        @NotNull(message = "La presentación es requerida")
+        private Long presentacionId;
 
         @NotNull(message = "La cantidad es requerida")
         private Integer cantidad;

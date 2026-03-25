@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface DetalleCompraRepository extends JpaRepository<DetalleCompra, Long> {
     List<DetalleCompra> findByCompraId(Long compraId);
-    List<DetalleCompra> findByCompraIdAndEstado(Long compraId, String estado);
 }

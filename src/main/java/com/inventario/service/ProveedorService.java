@@ -33,11 +33,12 @@ public class ProveedorService {
     @Transactional
     public ProveedorDTO create(ProveedorDTO.Create dto) {
         Proveedor proveedor = Proveedor.builder()
-                .nombre(dto.getNombre())
-                .contacto(dto.getContacto())
+                .razonSocial(dto.getRazonSocial())
+                .ruc(dto.getRuc())
                 .telefono(dto.getTelefono())
-                .email(dto.getEmail())
+                .correo(dto.getCorreo())
                 .direccion(dto.getDireccion())
+                .avatar(dto.getAvatar() != null ? dto.getAvatar() : "proveedor.png")
                 .estado("A")
                 .build();
         return toDTO(proveedorRepository.save(proveedor));
@@ -48,11 +49,12 @@ public class ProveedorService {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor", id));
 
-        if (dto.getNombre() != null) proveedor.setNombre(dto.getNombre());
-        if (dto.getContacto() != null) proveedor.setContacto(dto.getContacto());
+        if (dto.getRazonSocial() != null) proveedor.setRazonSocial(dto.getRazonSocial());
+        if (dto.getRuc() != null) proveedor.setRuc(dto.getRuc());
         if (dto.getTelefono() != null) proveedor.setTelefono(dto.getTelefono());
-        if (dto.getEmail() != null) proveedor.setEmail(dto.getEmail());
+        if (dto.getCorreo() != null) proveedor.setCorreo(dto.getCorreo());
         if (dto.getDireccion() != null) proveedor.setDireccion(dto.getDireccion());
+        if (dto.getAvatar() != null) proveedor.setAvatar(dto.getAvatar());
 
         return toDTO(proveedorRepository.save(proveedor));
     }
@@ -68,14 +70,15 @@ public class ProveedorService {
     private ProveedorDTO toDTO(Proveedor proveedor) {
         return ProveedorDTO.builder()
                 .id(proveedor.getId())
-                .nombre(proveedor.getNombre())
-                .contacto(proveedor.getContacto())
+                .razonSocial(proveedor.getRazonSocial())
+                .ruc(proveedor.getRuc())
                 .telefono(proveedor.getTelefono())
-                .email(proveedor.getEmail())
+                .correo(proveedor.getCorreo())
                 .direccion(proveedor.getDireccion())
+                .avatar(proveedor.getAvatar())
                 .estado(proveedor.getEstado())
-                .createdAt(proveedor.getCreatedAt())
-                .updatedAt(proveedor.getUpdatedAt())
+                .fechaCreacion(proveedor.getFechaCreacion())
+                .fechaEdicion(proveedor.getFechaEdicion())
                 .build();
     }
 }

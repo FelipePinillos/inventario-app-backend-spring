@@ -24,39 +24,29 @@ public class AuthService {
 
     public AuthResponseDTO login(AuthRequestDTO request) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.generateToken(authentication);
 
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-
-        return AuthResponseDTO.of(
-                token,
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getApellido(),
-                usuario.getEmail(),
-                usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().getNombre() : null
-        );
+        return AuthResponseDTO.of(token);
     }
 
-    public UsuarioDTO getCurrentUser(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+    public UsuarioDTO getCurrentUser(String dni) {
+        Usuario usuario = usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         return UsuarioDTO.builder()
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())
                 .apellido(usuario.getApellido())
-                .email(usuario.getEmail())
+                .dni(usuario.getDni())
                 .tipoUsuarioId(usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().getId() : null)
                 .tipoUsuarioNombre(usuario.getTipoUsuario() != null ? usuario.getTipoUsuario().getNombre() : null)
                 .estado(usuario.getEstado())
-                .createdAt(usuario.getCreatedAt())
-                .updatedAt(usuario.getUpdatedAt())
+                .fechaCreacion(usuario.getFechaCreacion())
+                .fechaEdicion(usuario.getFechaEdicion())
                 .build();
     }
 }

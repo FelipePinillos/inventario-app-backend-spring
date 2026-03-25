@@ -2,10 +2,6 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,43 +16,57 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 50)
+    @Builder.Default
+    private String codigo = "0";
+
+    @Column(length = 45)
     private String nombre;
 
-    @Column(length = 255)
-    private String descripcion;
-
-    @Column(name = "precio_compra", nullable = false, precision = 10, scale = 2)
-    private BigDecimal precioCompra;
-
-    @Column(name = "precio_venta", nullable = false, precision = 10, scale = 2)
-    private BigDecimal precioVenta;
-
-    @Column(nullable = false)
+    @Column(name = "unidad_base", nullable = false, length = 50)
     @Builder.Default
-    private Integer stock = 0;
+    private String unidadBase = "unidad";
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private Categoria categoria;
+    @Column(length = 255)
+    private String adicional;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "marca_id", nullable = false)
-    private Marca marca;
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_producto_id", nullable = false)
-    private TipoProducto tipoProducto;
+    @Column(name = "stock_actual")
+    private Integer stockActual;
 
-    @Column(nullable = false, length = 1)
+    @Column(name = "stock_maximo")
+    private Integer stockMaximo;
+
+    @Column(nullable = false, length = 255)
+    private String avatar;
+
+    @Column(nullable = false, length = 255)
     @Builder.Default
     private String estado = "A";
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private Categoria categoria;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_producto", nullable = false)
+    private TipoProducto tipoProducto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_marca", nullable = false)
+    private Marca marca;
+
+    @Column(name = "created_by")
+    private Integer createdBy;
+
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 }

@@ -15,10 +15,9 @@ import java.time.LocalDateTime;
 public class MarcaDTO {
     private Long id;
     private String nombre;
-    private String descripcion;
     private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
@@ -27,7 +26,6 @@ public class MarcaDTO {
     public static class Create {
         @NotBlank(message = "El nombre es requerido")
         private String nombre;
-        private String descripcion;
     }
 
     @Data
@@ -36,6 +34,5 @@ public class MarcaDTO {
     @Builder
     public static class Update {
         private String nombre;
-        private String descripcion;
     }
 }

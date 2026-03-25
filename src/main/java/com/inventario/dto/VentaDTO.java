@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,17 +18,17 @@ public class VentaDTO {
     private Long id;
     private Long clienteId;
     private String clienteNombre;
+    private String clienteDni;
     private Long usuarioId;
     private String usuarioNombre;
-    private Long estadoPagoId;
-    private String estadoPagoNombre;
-    private LocalDate fecha;
-    private BigDecimal total;
-    private String observaciones;
+    private LocalDateTime fecha;
+    private BigDecimal totalConDescuento;
+    private BigDecimal descuento;
+    private BigDecimal totalSinDescuento;
     private String estado;
     private List<DetalleVentaDTO> detalles;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
@@ -37,17 +36,16 @@ public class VentaDTO {
     @Builder
     public static class Create {
         private Long clienteId;
+        private String clienteNombre;
+        private String clienteDni;
 
         @NotNull(message = "El usuario es requerido")
         private Long usuarioId;
 
-        @NotNull(message = "El estado de pago es requerido")
-        private Long estadoPagoId;
-
         @NotNull(message = "La fecha es requerida")
-        private LocalDate fecha;
+        private LocalDateTime fecha;
 
-        private String observaciones;
+        private BigDecimal descuento;
 
         @NotNull(message = "Los detalles son requeridos")
         private List<DetalleVentaDTO.Create> detalles;
@@ -59,10 +57,11 @@ public class VentaDTO {
     @Builder
     public static class Update {
         private Long clienteId;
+        private String clienteNombre;
+        private String clienteDni;
         private Long usuarioId;
-        private Long estadoPagoId;
-        private LocalDate fecha;
-        private String observaciones;
-        private List<DetalleVentaDTO.Create> detalles;
+        private LocalDateTime fecha;
+        private BigDecimal descuento;
+        private String estado;
     }
 }

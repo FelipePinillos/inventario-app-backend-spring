@@ -21,13 +21,12 @@ public class CompraService {
     private final DetalleCompraRepository detalleCompraRepository;
     private final ProveedorRepository proveedorRepository;
     private final UsuarioRepository usuarioRepository;
-    private final ProductoRepository productoRepository;
-    private final EstadoPagoRepository estadoPagoRepository;
+    private final PresentacionRepository presentacionRepository;
 
     public List<CompraDTO> findAll(boolean incluirInactivos) {
         List<Compra> compras = incluirInactivos
                 ? compraRepository.findAll()
-                : compraRepository.findByEstado("A");
+                : compraRepository.findByEstado("CONFIRMADA");
         return compras.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -43,38 +42,35 @@ public class CompraService {
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getProveedorId()));
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", dto.getUsuarioId()));
-        EstadoPago estadoPago = estadoPagoRepository.findById(dto.getEstadoPagoId())
-                .orElseThrow(() -> new ResourceNotFoundException("EstadoPago", dto.getEstadoPagoId()));
 
-        BigDecimal total = calcularTotal(dto.getDetalles());
+        BigDecimal descuento = dto.getDescuento() != null ? dto.getDescuento() : BigDecimal.ZERO;
+        BigDecimal totalSinDescuento = calcularTotal(dto.getDetalles());
+        BigDecimal totalConDescuento = totalSinDescuento.subtract(descuento);
 
         Compra compra = Compra.builder()
                 .proveedor(proveedor)
                 .usuario(usuario)
-                .estadoPago(estadoPago)
-                .fecha(dto.getFecha())
-                .total(total)
-                .observaciones(dto.getObservaciones())
-                .estado("A")
+                .fechaCompra(dto.getFechaCompra())
+                .fechaEntrega(dto.getFechaEntrega())
+                .descuento(descuento)
+                .totalSinDescuento(totalSinDescuento)
+                .totalConDescuento(totalConDescuento)
+                .estado("CONFIRMADA")
                 .build();
 
         Compra savedCompra = compraRepository.save(compra);
 
         List<DetalleCompra> detalles = dto.getDetalles().stream().map(d -> {
-            Producto producto = productoRepository.findById(d.getProductoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Producto", d.getProductoId()));
-
-            producto.setStock(producto.getStock() + d.getCantidad());
-            productoRepository.save(producto);
+            Presentacion presentacion = presentacionRepository.findById(d.getPresentacionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Presentacion", d.getPresentacionId()));
 
             BigDecimal subtotal = d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad()));
             return DetalleCompra.builder()
                     .compra(savedCompra)
-                    .producto(producto)
+                    .presentacion(presentacion)
                     .cantidad(d.getCantidad())
                     .precioUnitario(d.getPrecioUnitario())
                     .subtotal(subtotal)
-                    .estado("A")
                     .build();
         }).collect(Collectors.toList());
 
@@ -99,13 +95,15 @@ public class CompraService {
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario", dto.getUsuarioId()));
             compra.setUsuario(usuario);
         }
-        if (dto.getEstadoPagoId() != null) {
-            EstadoPago estadoPago = estadoPagoRepository.findById(dto.getEstadoPagoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("EstadoPago", dto.getEstadoPagoId()));
-            compra.setEstadoPago(estadoPago);
+        if (dto.getFechaCompra() != null) compra.setFechaCompra(dto.getFechaCompra());
+        if (dto.getFechaEntrega() != null) compra.setFechaEntrega(dto.getFechaEntrega());
+        if (dto.getDescuento() != null) {
+            compra.setDescuento(dto.getDescuento());
+            if (compra.getTotalSinDescuento() != null) {
+                compra.setTotalConDescuento(compra.getTotalSinDescuento().subtract(dto.getDescuento()));
+            }
         }
-        if (dto.getFecha() != null) compra.setFecha(dto.getFecha());
-        if (dto.getObservaciones() != null) compra.setObservaciones(dto.getObservaciones());
+        if (dto.getEstado() != null) compra.setEstado(dto.getEstado());
 
         return toDTO(compraRepository.save(compra));
     }
@@ -114,7 +112,7 @@ public class CompraService {
     public void delete(Long id) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Compra", id));
-        compra.setEstado("I");
+        compra.setEstado("ANULADA");
         compraRepository.save(compra);
     }
 
@@ -132,19 +130,19 @@ public class CompraService {
         return CompraDTO.builder()
                 .id(compra.getId())
                 .proveedorId(compra.getProveedor() != null ? compra.getProveedor().getId() : null)
-                .proveedorNombre(compra.getProveedor() != null ? compra.getProveedor().getNombre() : null)
+                .proveedorNombre(compra.getProveedor() != null ? compra.getProveedor().getRazonSocial() : null)
                 .usuarioId(compra.getUsuario() != null ? compra.getUsuario().getId() : null)
                 .usuarioNombre(compra.getUsuario() != null
                         ? compra.getUsuario().getNombre() + " " + compra.getUsuario().getApellido() : null)
-                .estadoPagoId(compra.getEstadoPago() != null ? compra.getEstadoPago().getId() : null)
-                .estadoPagoNombre(compra.getEstadoPago() != null ? compra.getEstadoPago().getNombre() : null)
-                .fecha(compra.getFecha())
-                .total(compra.getTotal())
-                .observaciones(compra.getObservaciones())
+                .fechaCompra(compra.getFechaCompra())
+                .fechaEntrega(compra.getFechaEntrega())
+                .totalConDescuento(compra.getTotalConDescuento())
+                .descuento(compra.getDescuento())
+                .totalSinDescuento(compra.getTotalSinDescuento())
                 .estado(compra.getEstado())
                 .detalles(detallesDTO)
-                .createdAt(compra.getCreatedAt())
-                .updatedAt(compra.getUpdatedAt())
+                .fechaCreacion(compra.getFechaCreacion())
+                .fechaEdicion(compra.getFechaEdicion())
                 .build();
     }
 
@@ -152,14 +150,13 @@ public class CompraService {
         return DetalleCompraDTO.builder()
                 .id(detalle.getId())
                 .compraId(detalle.getCompra() != null ? detalle.getCompra().getId() : null)
-                .productoId(detalle.getProducto() != null ? detalle.getProducto().getId() : null)
-                .productoNombre(detalle.getProducto() != null ? detalle.getProducto().getNombre() : null)
+                .presentacionId(detalle.getPresentacion() != null ? detalle.getPresentacion().getId() : null)
+                .presentacionNombre(detalle.getPresentacion() != null ? detalle.getPresentacion().getNombre() : null)
                 .cantidad(detalle.getCantidad())
                 .precioUnitario(detalle.getPrecioUnitario())
                 .subtotal(detalle.getSubtotal())
-                .estado(detalle.getEstado())
-                .createdAt(detalle.getCreatedAt())
-                .updatedAt(detalle.getUpdatedAt())
+                .fechaCreacion(detalle.getFechaCreacion())
+                .fechaEdicion(detalle.getFechaEdicion())
                 .build();
     }
 }

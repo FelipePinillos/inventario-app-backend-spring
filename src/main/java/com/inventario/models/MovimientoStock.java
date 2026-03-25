@@ -2,36 +2,34 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "detalle_compra")
+@Table(name = "movimientos_stock")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetalleCompra {
+public class MovimientoStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_compra")
-    private Compra compra;
+    @JoinColumn(name = "id_producto", nullable = false)
+    private Producto producto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_presentacion")
-    private Presentacion presentacion;
+    @Column(length = 10)
+    private String tipo;
 
+    @Column(nullable = false)
     private Integer cantidad;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal subtotal;
+    @Column(length = 100)
+    private String referencia;
 
-    @Column(name = "precio_unitario", precision = 10, scale = 2)
-    private BigDecimal precioUnitario;
+    private LocalDateTime fecha;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
@@ -45,3 +43,4 @@ public class DetalleCompra {
     @Column(name = "updated_by")
     private Integer updatedBy;
 }
+

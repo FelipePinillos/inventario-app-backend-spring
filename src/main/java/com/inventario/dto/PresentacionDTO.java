@@ -17,15 +17,14 @@ import java.time.LocalDateTime;
 public class PresentacionDTO {
     private Long id;
     private String nombre;
-    private String descripcion;
     private Long productoId;
     private String productoNombre;
-    private Integer cantidad;
-    private String unidadMedida;
-    private BigDecimal precio;
+    private Integer cantidadBase;
+    private BigDecimal precioVenta;
+    private BigDecimal precioCompra;
     private String estado;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaEdicion;
 
     @Data
     @NoArgsConstructor
@@ -35,18 +34,16 @@ public class PresentacionDTO {
         @NotBlank(message = "El nombre es requerido")
         private String nombre;
 
-        private String descripcion;
-
         @NotNull(message = "El producto es requerido")
         private Long productoId;
 
-        @NotNull(message = "La cantidad es requerida")
-        private Integer cantidad;
+        @NotNull(message = "La cantidad base es requerida")
+        private Integer cantidadBase;
 
-        private String unidadMedida;
+        @NotNull(message = "El precio de venta es requerido")
+        private BigDecimal precioVenta;
 
-        @NotNull(message = "El precio es requerido")
-        private BigDecimal precio;
+        private BigDecimal precioCompra;
     }
 
     @Data
@@ -55,10 +52,9 @@ public class PresentacionDTO {
     @Builder
     public static class Update {
         private String nombre;
-        private String descripcion;
         private Long productoId;
-        private Integer cantidad;
-        private String unidadMedida;
-        private BigDecimal precio;
+        private Integer cantidadBase;
+        private BigDecimal precioVenta;
+        private BigDecimal precioCompra;
     }
 }

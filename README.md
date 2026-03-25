@@ -6,7 +6,7 @@ REST API backend for an inventory management system built with Spring Boot 3.
 
 - **Java 17** + **Spring Boot 3.1.5**
 - **Spring Security 6** with JWT authentication
-- **Spring Data JPA** + **PostgreSQL**
+- **Spring Data JPA** + **H2 / PostgreSQL**
 - **Lombok** for boilerplate reduction
 - **Bean Validation** for request validation
 
@@ -16,28 +16,89 @@ REST API backend for an inventory management system built with Spring Boot 3.
 
 - Java 17+
 - Maven 3.8+
-- PostgreSQL database
+- PostgreSQL database only if you want to run with `postgres` or `prod`
+
+### Profiles
+
+- **Default / local**: uses **H2 en memoria** so the app can start without PostgreSQL
+- **dev**: same local flow with more verbose logs
+- **postgres**: uses **PostgreSQL** for local development against a real database
+- **prod**: uses **PostgreSQL** for deployment/production with required environment variables
+- **test**: uses **H2** for tests
 
 ### Configuration
 
-Set the following environment variables or edit `application.yml`:
+#### Local default
+No database variables are required. The application starts with H2 in memory and enables the console at `/h2-console`.
 
-| Variable | Default | Description |
+#### Local with PostgreSQL
+Use profile `postgres` and set these variables:
+
+| Variable | Example | Description |
 |---|---|---|
 | `DATABASE_URL` | `jdbc:postgresql://localhost:5432/inventario_db` | PostgreSQL URL |
 | `DATABASE_USERNAME` | `postgres` | DB username |
-| `DATABASE_PASSWORD` | `postgres` | DB password |
+| `DATABASE_PASSWORD` | `tu_password` | DB password |
+| `JPA_DDL_AUTO` | `update` | Hibernate schema mode for local PostgreSQL |
 | `JWT_SECRET` | (default key) | JWT signing secret (min 64 chars) |
 | `PORT` | `8080` | Server port |
 | `CORS_ORIGINS` | `http://localhost:3000,...` | Allowed CORS origins |
 
+#### Supabase example
+Known values from your project:
+
+- **Host**: `aws-1-us-east-1.pooler.supabase.com`
+- **Database**: `postgres`
+- **Project ID**: `mnwzoaqjvvovuziqsqwd`
+- **Recommended username format** for Supabase pooler: `postgres.mnwzoaqjvvovuziqsqwd`
+- **Recommended JDBC URL**: `jdbc:postgresql://aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require`
+
+If Supabase gave you a different port or user in the dashboard, use the exact values shown there.
+
+#### Production / PostgreSQL
+Use profile `prod` and define at least:
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL URL |
+| `DATABASE_USERNAME` | DB username |
+| `DATABASE_PASSWORD` | DB password |
+| `JWT_SECRET` | JWT signing secret |
+
 ### Run
 
+#### Local with H2
 ```bash
 mvn spring-boot:run
-# or with dev profile:
+```
+
+#### Dev profile
+```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
+
+#### Local with PostgreSQL
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
+```
+
+#### Production profile with PostgreSQL
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+### IntelliJ IDEA
+For a local run against PostgreSQL:
+
+1. Open **Run/Debug Configurations**.
+2. Select your Spring Boot configuration.
+3. Set **Active profiles** to `postgres`.
+4. Add environment variables:
+   - `DATABASE_URL=jdbc:postgresql://aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require`
+   - `DATABASE_USERNAME=postgres.mnwzoaqjvvovuziqsqwd`
+   - `DATABASE_PASSWORD=tu_password_real_de_supabase`
+   - `JPA_DDL_AUTO=update`
+5. Run the application.
 
 ## API Endpoints
 

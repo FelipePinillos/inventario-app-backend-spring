@@ -22,13 +22,12 @@ public class VentaService {
     private final DetalleVentaRepository detalleVentaRepository;
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
-    private final ProductoRepository productoRepository;
-    private final EstadoPagoRepository estadoPagoRepository;
+    private final PresentacionRepository presentacionRepository;
 
     public List<VentaDTO> findAll(boolean incluirInactivos) {
         List<Venta> ventas = incluirInactivos
                 ? ventaRepository.findAll()
-                : ventaRepository.findByEstado("A");
+                : ventaRepository.findByEstado("CONFIRMADA");
         return ventas.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -48,42 +47,46 @@ public class VentaService {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", dto.getUsuarioId()));
-        EstadoPago estadoPago = estadoPagoRepository.findById(dto.getEstadoPagoId())
-                .orElseThrow(() -> new ResourceNotFoundException("EstadoPago", dto.getEstadoPagoId()));
 
-        BigDecimal total = calcularTotal(dto.getDetalles());
+        BigDecimal descuento = dto.getDescuento() != null ? dto.getDescuento() : BigDecimal.ZERO;
+        BigDecimal totalSinDescuento = calcularTotal(dto.getDetalles());
+        BigDecimal totalConDescuento = totalSinDescuento.subtract(descuento);
 
         Venta venta = Venta.builder()
                 .cliente(cliente)
                 .usuario(usuario)
-                .estadoPago(estadoPago)
                 .fecha(dto.getFecha())
-                .total(total)
-                .observaciones(dto.getObservaciones())
-                .estado("A")
+                .descuento(descuento)
+                .totalSinDescuento(totalSinDescuento)
+                .totalConDescuento(totalConDescuento)
+                .clienteNombre(dto.getClienteNombre())
+                .clienteDni(dto.getClienteDni())
+                .estado("CONFIRMADA")
                 .build();
 
         Venta savedVenta = ventaRepository.save(venta);
 
         List<DetalleVenta> detalles = dto.getDetalles().stream().map(d -> {
-            Producto producto = productoRepository.findById(d.getProductoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Producto", d.getProductoId()));
+            Presentacion presentacion = presentacionRepository.findById(d.getPresentacionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Presentacion", d.getPresentacionId()));
 
-            if (producto.getStock() < d.getCantidad()) {
-                throw new BadRequestException("Stock insuficiente para el producto: " + producto.getNombre());
+            // Actualizar stock del producto
+            Producto producto = presentacion.getProducto();
+            int nuevoCantidad = d.getCantidad() * presentacion.getCantidadBase();
+            if (producto.getStockActual() != null && producto.getStockActual() < nuevoCantidad) {
+                throw new BadRequestException("Stock insuficiente para: " + producto.getNombre());
             }
-
-            producto.setStock(producto.getStock() - d.getCantidad());
-            productoRepository.save(producto);
+            if (producto.getStockActual() != null) {
+                producto.setStockActual(producto.getStockActual() - nuevoCantidad);
+            }
 
             BigDecimal subtotal = d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad()));
             return DetalleVenta.builder()
                     .venta(savedVenta)
-                    .producto(producto)
+                    .presentacion(presentacion)
                     .cantidad(d.getCantidad())
                     .precioUnitario(d.getPrecioUnitario())
                     .subtotal(subtotal)
-                    .estado("A")
                     .build();
         }).collect(Collectors.toList());
 
@@ -108,13 +111,16 @@ public class VentaService {
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario", dto.getUsuarioId()));
             venta.setUsuario(usuario);
         }
-        if (dto.getEstadoPagoId() != null) {
-            EstadoPago estadoPago = estadoPagoRepository.findById(dto.getEstadoPagoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("EstadoPago", dto.getEstadoPagoId()));
-            venta.setEstadoPago(estadoPago);
-        }
         if (dto.getFecha() != null) venta.setFecha(dto.getFecha());
-        if (dto.getObservaciones() != null) venta.setObservaciones(dto.getObservaciones());
+        if (dto.getDescuento() != null) {
+            venta.setDescuento(dto.getDescuento());
+            if (venta.getTotalSinDescuento() != null) {
+                venta.setTotalConDescuento(venta.getTotalSinDescuento().subtract(dto.getDescuento()));
+            }
+        }
+        if (dto.getEstado() != null) venta.setEstado(dto.getEstado());
+        if (dto.getClienteNombre() != null) venta.setClienteNombre(dto.getClienteNombre());
+        if (dto.getClienteDni() != null) venta.setClienteDni(dto.getClienteDni());
 
         return toDTO(ventaRepository.save(venta));
     }
@@ -123,7 +129,7 @@ public class VentaService {
     public void delete(Long id) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Venta", id));
-        venta.setEstado("I");
+        venta.setEstado("ANULADA");
         ventaRepository.save(venta);
     }
 
@@ -142,19 +148,22 @@ public class VentaService {
                 .id(venta.getId())
                 .clienteId(venta.getCliente() != null ? venta.getCliente().getId() : null)
                 .clienteNombre(venta.getCliente() != null
-                        ? venta.getCliente().getNombre() + " " + venta.getCliente().getApellido() : null)
+                        ? venta.getCliente().getNombre() + " " + venta.getCliente().getApellido()
+                        : venta.getClienteNombre())
+                .clienteDni(venta.getCliente() != null
+                        ? venta.getCliente().getDni()
+                        : venta.getClienteDni())
                 .usuarioId(venta.getUsuario() != null ? venta.getUsuario().getId() : null)
                 .usuarioNombre(venta.getUsuario() != null
                         ? venta.getUsuario().getNombre() + " " + venta.getUsuario().getApellido() : null)
-                .estadoPagoId(venta.getEstadoPago() != null ? venta.getEstadoPago().getId() : null)
-                .estadoPagoNombre(venta.getEstadoPago() != null ? venta.getEstadoPago().getNombre() : null)
                 .fecha(venta.getFecha())
-                .total(venta.getTotal())
-                .observaciones(venta.getObservaciones())
+                .totalConDescuento(venta.getTotalConDescuento())
+                .descuento(venta.getDescuento())
+                .totalSinDescuento(venta.getTotalSinDescuento())
                 .estado(venta.getEstado())
                 .detalles(detallesDTO)
-                .createdAt(venta.getCreatedAt())
-                .updatedAt(venta.getUpdatedAt())
+                .fechaCreacion(venta.getFechaCreacion())
+                .fechaEdicion(venta.getFechaEdicion())
                 .build();
     }
 
@@ -162,14 +171,13 @@ public class VentaService {
         return DetalleVentaDTO.builder()
                 .id(detalle.getId())
                 .ventaId(detalle.getVenta() != null ? detalle.getVenta().getId() : null)
-                .productoId(detalle.getProducto() != null ? detalle.getProducto().getId() : null)
-                .productoNombre(detalle.getProducto() != null ? detalle.getProducto().getNombre() : null)
+                .presentacionId(detalle.getPresentacion() != null ? detalle.getPresentacion().getId() : null)
+                .presentacionNombre(detalle.getPresentacion() != null ? detalle.getPresentacion().getNombre() : null)
                 .cantidad(detalle.getCantidad())
                 .precioUnitario(detalle.getPrecioUnitario())
                 .subtotal(detalle.getSubtotal())
-                .estado(detalle.getEstado())
-                .createdAt(detalle.getCreatedAt())
-                .updatedAt(detalle.getUpdatedAt())
+                .fechaCreacion(detalle.getFechaCreacion())
+                .fechaEdicion(detalle.getFechaEdicion())
                 .build();
     }
 }

@@ -21,12 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+    public UserDetails loadUserByUsername(String dni) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByDni(dni)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con DNI: " + dni));
 
         if (!"A".equals(usuario.getEstado())) {
-            throw new UsernameNotFoundException("Usuario inactivo: " + email);
+            throw new UsernameNotFoundException("Usuario inactivo: " + dni);
         }
 
         String role = usuario.getTipoUsuario() != null
@@ -34,8 +34,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 : "USER";
 
         return new User(
-                usuario.getEmail(),
-                usuario.getPassword(),
+                usuario.getDni(),
+                usuario.getContrasena(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + role))
         );
     }

@@ -2,9 +2,6 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,30 +16,34 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 45)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 45)
     private String apellido;
 
-    @Column(length = 150)
-    private String email;
+    @Column(length = 45)
+    private String dni;
 
-    @Column(length = 20)
-    private String telefono;
+    @Column(nullable = false)
+    private Integer telefono;
 
-    @Column(length = 255)
-    private String direccion;
+    @Column(nullable = false, length = 45)
+    private String correo;
 
-    @Column(nullable = false, length = 1)
+    @Column(nullable = false, length = 10)
     @Builder.Default
     private String estado = "A";
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
+
+    @Column(name = "created_by")
+    private Integer createdBy;
+
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 }

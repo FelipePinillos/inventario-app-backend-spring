@@ -35,9 +35,9 @@ public class ClienteService {
         Cliente cliente = Cliente.builder()
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
-                .email(dto.getEmail())
+                .dni(dto.getDni())
                 .telefono(dto.getTelefono())
-                .direccion(dto.getDireccion())
+                .correo(dto.getCorreo())
                 .estado("A")
                 .build();
         return toDTO(clienteRepository.save(cliente));
@@ -50,9 +50,9 @@ public class ClienteService {
 
         if (dto.getNombre() != null) cliente.setNombre(dto.getNombre());
         if (dto.getApellido() != null) cliente.setApellido(dto.getApellido());
-        if (dto.getEmail() != null) cliente.setEmail(dto.getEmail());
+        if (dto.getDni() != null) cliente.setDni(dto.getDni());
         if (dto.getTelefono() != null) cliente.setTelefono(dto.getTelefono());
-        if (dto.getDireccion() != null) cliente.setDireccion(dto.getDireccion());
+        if (dto.getCorreo() != null) cliente.setCorreo(dto.getCorreo());
 
         return toDTO(clienteRepository.save(cliente));
     }
@@ -70,12 +70,12 @@ public class ClienteService {
                 .id(cliente.getId())
                 .nombre(cliente.getNombre())
                 .apellido(cliente.getApellido())
-                .email(cliente.getEmail())
+                .dni(cliente.getDni())
                 .telefono(cliente.getTelefono())
-                .direccion(cliente.getDireccion())
+                .correo(cliente.getCorreo())
                 .estado(cliente.getEstado())
-                .createdAt(cliente.getCreatedAt())
-                .updatedAt(cliente.getUpdatedAt())
+                .fechaCreacion(cliente.getFechaCreacion())
+                .fechaEdicion(cliente.getFechaEdicion())
                 .build();
     }
 }

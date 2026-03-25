@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +41,10 @@ public class PresentacionService {
 
         Presentacion presentacion = Presentacion.builder()
                 .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
                 .producto(producto)
-                .cantidad(dto.getCantidad())
-                .unidadMedida(dto.getUnidadMedida())
-                .precio(dto.getPrecio())
+                .cantidadBase(dto.getCantidadBase())
+                .precioVenta(dto.getPrecioVenta())
+                .precioCompra(dto.getPrecioCompra() != null ? dto.getPrecioCompra() : BigDecimal.ZERO)
                 .estado("A")
                 .build();
 
@@ -57,10 +57,9 @@ public class PresentacionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Presentacion", id));
 
         if (dto.getNombre() != null) presentacion.setNombre(dto.getNombre());
-        if (dto.getDescripcion() != null) presentacion.setDescripcion(dto.getDescripcion());
-        if (dto.getCantidad() != null) presentacion.setCantidad(dto.getCantidad());
-        if (dto.getUnidadMedida() != null) presentacion.setUnidadMedida(dto.getUnidadMedida());
-        if (dto.getPrecio() != null) presentacion.setPrecio(dto.getPrecio());
+        if (dto.getCantidadBase() != null) presentacion.setCantidadBase(dto.getCantidadBase());
+        if (dto.getPrecioVenta() != null) presentacion.setPrecioVenta(dto.getPrecioVenta());
+        if (dto.getPrecioCompra() != null) presentacion.setPrecioCompra(dto.getPrecioCompra());
         if (dto.getProductoId() != null) {
             Producto producto = productoRepository.findById(dto.getProductoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Producto", dto.getProductoId()));
@@ -82,15 +81,14 @@ public class PresentacionService {
         return PresentacionDTO.builder()
                 .id(presentacion.getId())
                 .nombre(presentacion.getNombre())
-                .descripcion(presentacion.getDescripcion())
                 .productoId(presentacion.getProducto() != null ? presentacion.getProducto().getId() : null)
                 .productoNombre(presentacion.getProducto() != null ? presentacion.getProducto().getNombre() : null)
-                .cantidad(presentacion.getCantidad())
-                .unidadMedida(presentacion.getUnidadMedida())
-                .precio(presentacion.getPrecio())
+                .cantidadBase(presentacion.getCantidadBase())
+                .precioVenta(presentacion.getPrecioVenta())
+                .precioCompra(presentacion.getPrecioCompra())
                 .estado(presentacion.getEstado())
-                .createdAt(presentacion.getCreatedAt())
-                .updatedAt(presentacion.getUpdatedAt())
+                .fechaCreacion(presentacion.getFechaCreacion())
+                .fechaEdicion(presentacion.getFechaEdicion())
                 .build();
     }
 }

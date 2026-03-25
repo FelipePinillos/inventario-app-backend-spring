@@ -2,10 +2,6 @@ package com.inventario.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "estado_pago")
@@ -19,18 +15,12 @@ public class EstadoPago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 45)
     private String nombre;
 
-    @Column(nullable = false, length = 1)
-    @Builder.Default
-    private String estado = "A";
+    @Column(name = "created_by")
+    private Integer createdBy;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 }

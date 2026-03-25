@@ -34,7 +34,6 @@ public class CategoriaService {
     public CategoriaDTO create(CategoriaDTO.Create dto) {
         Categoria categoria = Categoria.builder()
                 .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
                 .estado("A")
                 .build();
         return toDTO(categoriaRepository.save(categoria));
@@ -46,7 +45,6 @@ public class CategoriaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria", id));
 
         if (dto.getNombre() != null) categoria.setNombre(dto.getNombre());
-        if (dto.getDescripcion() != null) categoria.setDescripcion(dto.getDescripcion());
 
         return toDTO(categoriaRepository.save(categoria));
     }
@@ -63,10 +61,9 @@ public class CategoriaService {
         return CategoriaDTO.builder()
                 .id(categoria.getId())
                 .nombre(categoria.getNombre())
-                .descripcion(categoria.getDescripcion())
                 .estado(categoria.getEstado())
-                .createdAt(categoria.getCreatedAt())
-                .updatedAt(categoria.getUpdatedAt())
+                .fechaCreacion(categoria.getFechaCreacion())
+                .fechaEdicion(categoria.getFechaEdicion())
                 .build();
     }
 }
